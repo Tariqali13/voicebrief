@@ -36,7 +36,7 @@ export default async function Home() {
     <section style={{ display: 'grid', gap: 18 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: 12, flexWrap: 'wrap' }}>
         <h1 style={{ fontSize: '2rem' }}>Your meetings</h1>
-        {meetings.filter((m) => m.source === 'sample').length < SAMPLE_MEETINGS.length && <SampleButton quiet />}
+        {meetings.filter((m) => m.source === 'sample' && m.status !== 'failed').length < SAMPLE_MEETINGS.length && <SampleButton quiet />}
       </div>
       <div className="pad">
         {meetings.map((m) => (
