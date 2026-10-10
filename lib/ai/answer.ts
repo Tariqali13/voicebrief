@@ -2,6 +2,7 @@ import { env } from '../env';
 import { pool, ready, toVector } from '../db';
 import { embed } from './embed';
 import { addUsage, client, emptyUsage, model, type Usage } from './providers';
+import { normalizeCitations } from '../citations';
 
 export interface Source {
   ref: string; // "S1"
@@ -124,7 +125,7 @@ export async function* answer(ownerId: string, question: string, meetingId?: str
 /** Only labels that exist count as citations; anything else the model wrote is ignored. */
 export function citedRefs(text: string, sources: Source[]): string[] {
   const valid = new Set(sources.map((s) => s.ref));
-  return [...new Set([...text.matchAll(/\[(S\d+)\]/g)].map((m) => m[1]!))].filter((r) => valid.has(r));
+  return [...new Set([...normalizeCitations(text).matchAll(/\[(S\d+)\]/g)].map((m) => m[1]!))].filter((r) => valid.has(r));
 }
 
 /** Offline fallback: quote the best-matching excerpt, cited. */

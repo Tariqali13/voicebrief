@@ -110,6 +110,9 @@ describe('retrieval fusion and citations', () => {
   it('only counts citations that refer to sources actually provided', () => {
     const sources = [{ ref: 'S1' }, { ref: 'S2' }] as Source[];
     expect(citedRefs('Yes [S2], also [S1][S2] and [S9].', sources)).toEqual(['S2', 'S1']);
+    // Grouped style some models use.
+    expect(citedRefs('Daniel ships it by Wednesday [S1, S2].', sources)).toEqual(['S1', 'S2']);
+    expect(citedRefs('See [S2;S1] and [S9, S1].', sources)).toEqual(['S2', 'S1']);
   });
 });
 

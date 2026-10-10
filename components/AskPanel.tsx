@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { errorMessage, readNdjson } from '@/lib/client/stream';
 import { clock } from '@/lib/format';
 import type { Source } from '@/lib/ai/answer';
+import { normalizeCitations } from '@/lib/citations';
 
 type Event = { type: 'sources'; sources: Source[] } | { type: 'text'; text: string } | { type: 'done'; cited: string[] } | { type: 'error'; message: string };
 
@@ -114,7 +115,7 @@ export function AskPanel({ meetingId, suggestions = [], onSeek }: Props) {
 function renderCitations(text: string, sources: Source[], onSeek?: (sec: number) => void) {
   if (!text) return null;
   const byRef = new Map(sources.map((s) => [s.ref, s]));
-  return text.split(/(\[S\d+\])/g).map((part, i) => {
+  return normalizeCitations(text).split(/(\[S\d+\])/g).map((part, i) => {
     const ref = part.match(/^\[(S\d+)\]$/)?.[1];
     const s = ref ? byRef.get(ref) : undefined;
     if (!s) return <span key={i}>{part}</span>;
