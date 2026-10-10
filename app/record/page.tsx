@@ -16,7 +16,8 @@ const STAGES: { key: Progress['stage']; label: string }[] = [
 ];
 
 function pickMime(): string {
-  for (const t of ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg']) if (MediaRecorder.isTypeSupported(t)) return t;
+  for (const t of ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg'])
+    if (MediaRecorder.isTypeSupported(t)) return t;
   return '';
 }
 
@@ -36,13 +37,65 @@ export default function RecordPage() {
 
   useEffect(() => () => stopRef.current(), []);
 
+  const processAudio = useCallback(
+    async (blob: Blob, name: string, source: 'recording' | 'upload', meetingTitle: string) => {
+      setPhase('processing');
+      setStage('transcribing');
+      setError(null);
+      const form = new FormData();
+      form.append('audio', blob, name);
+      form.append('title', meetingTitle);
+      form.append('source', source);
+      let res: Response;
+      try {
+        res = await fetch('/api/meetings', { method: 'POST', body: form });
+      } catch {
+        setError('Couldn’t reach the server. Check your connection and try again; your recording is still here.');
+        setPhase('ready');
+        return;
+      }
+      if (!res.ok) {
+        setError(await errorMessage(res));
+        setPhase('ready');
+        return;
+      }
+      for await (const p of readNdjson<Progress>(res)) {
+        if (p.stage === 'done') {
+          await saveAudio(p.meetingId, blob);
+          router.push(`/m/${p.meetingId}`);
+          return;
+        }
+        if (p.stage === 'error') {
+          setError(p.message);
+          setPhase('ready');
+          return;
+        }
+        setStage(p.stage);
+      }
+    },
+    [router],
+  );
+
   const start = useCallback(async () => {
     setError(null);
+    if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') {
+      setError(
+        'This browser can’t record audio here. Open the page in Chrome, Edge, Firefox or Safari, or upload a recording instead.',
+      );
+      return;
+    }
     let stream: MediaStream;
     try {
       stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
-    } catch {
-      setError('Microphone access was blocked. Allow it in your browser’s site settings, or upload a recording instead.');
+    } catch (err) {
+      const name = (err as DOMException)?.name;
+      setError(
+        name === 'NotFoundError'
+          ? 'No microphone was found. Connect one, or upload a recording instead.'
+          : name === 'NotReadableError'
+            ? 'The microphone is in use by another app. Close it and try again, or upload a recording instead.'
+            : 'Microphone access was blocked. Click the camera/mic icon in the address bar to allow it, then try again, or upload a recording instead.',
+      );
       return;
     }
     const mime = pickMime();
@@ -51,9 +104,19 @@ export default function RecordPage() {
     recorder.ondataavailable = (e) => e.data.size && parts.push(e.data);
     recorder.onstop = () => {
       const type = (recorder.mimeType || mime || 'audio/webm').split(';')[0]!;
-      setAudio(new Blob(parts, { type }));
-      setFileName(`recording.${type.includes('mp4') ? 'm4a' : type.split('/')[1]}`);
-      setPhase('ready');
+      const blob = new Blob(parts, { type });
+      const name = `recording.${type.includes('mp4') ? 'm4a' : type.split('/')[1]}`;
+      setAudio(blob);
+      setFileName(name);
+      const secs = (Date.now() - started.current) / 1000;
+      if (blob.size === 0 || secs < 2) {
+        setError('That recording was too short to transcribe. Record at least a few seconds of speech.');
+        setPhase('idle');
+        setSeconds(0);
+        return;
+      }
+      // Stopping means "I'm done": go straight to the notes instead of asking for a second click.
+      void processAudio(blob, name, 'recording', '');
     };
 
     // Live waveform, drawn like a pen moving across the ruled page.
@@ -102,7 +165,7 @@ export default function RecordPage() {
     recorder.start(1000);
     setPhase('recording');
     draw();
-  }, []);
+  }, [processAudio]);
 
   function pickFile(file: File | undefined) {
     if (!file) return;
@@ -114,36 +177,6 @@ export default function RecordPage() {
     setPhase('ready');
   }
 
-  async function process() {
-    if (!audio) return;
-    setPhase('processing');
-    setStage('transcribing');
-    setError(null);
-    const form = new FormData();
-    form.append('audio', audio, fileName);
-    form.append('title', title);
-    form.append('source', seconds > 0 ? 'recording' : 'upload');
-    const res = await fetch('/api/meetings', { method: 'POST', body: form });
-    if (!res.ok) {
-      setError(await errorMessage(res));
-      setPhase('ready');
-      return;
-    }
-    for await (const p of readNdjson<Progress>(res)) {
-      if (p.stage === 'done') {
-        await saveAudio(p.meetingId, audio);
-        router.push(`/m/${p.meetingId}`);
-        return;
-      }
-      if (p.stage === 'error') {
-        setError(p.message);
-        setPhase('ready');
-        return;
-      }
-      setStage(p.stage);
-    }
-  }
-
   const stageIndex = STAGES.findIndex((s) => s.key === stage);
 
   return (
@@ -151,7 +184,8 @@ export default function RecordPage() {
       <h1>{phase === 'processing' ? 'Making your notes' : phase === 'recording' ? 'Listening…' : 'Record a meeting'}</h1>
       {phase === 'idle' && (
         <p className="lede">
-          Put your device in the middle of the table and press record. When you stop, you&apos;ll get a transcript and notes, usually within a minute.
+          Put your device in the middle of the table and press record. When you stop, you&apos;ll get a transcript and notes,
+          usually within a minute.
         </p>
       )}
 
@@ -203,10 +237,19 @@ export default function RecordPage() {
           <audio controls src={URL.createObjectURL(audio)} />
           <label style={{ display: 'grid', gap: 6 }}>
             <span style={{ fontWeight: 700 }}>Title (optional)</span>
-            <input className="input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Leave empty and we’ll name it from the conversation" maxLength={120} />
+            <input
+              className="input"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Leave empty and we’ll name it from the conversation"
+              maxLength={120}
+            />
           </label>
           <div style={{ display: 'flex', gap: 10 }}>
-            <button className="btn primary" onClick={process}>
+            <button
+              className="btn primary"
+              onClick={() => audio && processAudio(audio, fileName, seconds > 0 ? 'recording' : 'upload', title)}
+            >
               Make notes
             </button>
             <button
