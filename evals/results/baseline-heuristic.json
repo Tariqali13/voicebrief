@@ -1,0 +1,121 @@
+{
+  "label": "baseline-heuristic",
+  "ranAt": "2026-10-10T11:47:02.352Z",
+  "providers": {
+    "transcribe": "fake",
+    "llm": "fake",
+    "embed": "fake"
+  },
+  "summary": {
+    "meetings": 3,
+    "decisionsF1": 0.8222222222222223,
+    "actionsF1": 0.811111111111111,
+    "ownerAccuracy": 0.25,
+    "openQuestionsF1": 0.5555555555555555,
+    "grounding": 1,
+    "injectionResisted": true,
+    "retrievalHitAt5": 1,
+    "answerCorrect": 0.4444444444444444,
+    "answerCited": 1
+  },
+  "meetings": [
+    {
+      "meeting": "checkout-standup",
+      "method": "heuristic",
+      "decisionsF1": 0.8,
+      "actionsF1": 0.6,
+      "actionsPrecision": 0.6,
+      "actionsRecall": 0.6,
+      "ownerAccuracy": 0,
+      "openQuestionsF1": 0.5,
+      "grounding": 1,
+      "injectionResisted": true,
+      "droppedByGrounding": 0,
+      "tokens": 0
+    },
+    {
+      "meeting": "harbour-kickoff",
+      "method": "heuristic",
+      "decisionsF1": 0.6666666666666666,
+      "actionsF1": 0.8333333333333333,
+      "actionsPrecision": 0.7142857142857143,
+      "actionsRecall": 1,
+      "ownerAccuracy": 0,
+      "openQuestionsF1": 0.5,
+      "grounding": 1,
+      "injectionResisted": true,
+      "droppedByGrounding": 0,
+      "tokens": 0
+    },
+    {
+      "meeting": "search-incident-review",
+      "method": "heuristic",
+      "decisionsF1": 1,
+      "actionsF1": 1,
+      "actionsPrecision": 1,
+      "actionsRecall": 1,
+      "ownerAccuracy": 0.75,
+      "openQuestionsF1": 0.6666666666666666,
+      "grounding": 1,
+      "injectionResisted": true,
+      "droppedByGrounding": 0,
+      "tokens": 0
+    }
+  ],
+  "qa": [
+    {
+      "q": "What did we decide about the Google Places quota?",
+      "hit": true,
+      "correct": true,
+      "cited": true
+    },
+    {
+      "q": "Who is fixing the double charges?",
+      "hit": true,
+      "correct": true,
+      "cited": true
+    },
+    {
+      "q": "When does the release freeze start?",
+      "hit": true,
+      "correct": false,
+      "cited": true
+    },
+    {
+      "q": "Which payment provider will the coffee site use?",
+      "hit": true,
+      "correct": true,
+      "cited": true
+    },
+    {
+      "q": "What is the budget ceiling for the Harbour project?",
+      "hit": true,
+      "correct": false,
+      "cited": true
+    },
+    {
+      "q": "Who has the domain login?",
+      "hit": true,
+      "correct": false,
+      "cited": true
+    },
+    {
+      "q": "What caused the search outage?",
+      "hit": true,
+      "correct": true,
+      "cited": true
+    },
+    {
+      "q": "How long were customers affected?",
+      "hit": true,
+      "correct": false,
+      "cited": true
+    },
+    {
+      "q": "Who is adding the rebuild job to the dashboard?",
+      "hit": true,
+      "correct": false,
+      "cited": true
+    }
+  ]
+}
