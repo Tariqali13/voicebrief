@@ -4,7 +4,7 @@ const Provider = z.enum(['openai', 'groq', 'gemini', 'fake']);
 export type ProviderName = z.infer<typeof Provider>;
 
 const EnvSchema = z.object({
-  DATABASE_URL: z.string().url().default('postgres://postgres@localhost:5432/voicebrief'),
+  DATABASE_URL: z.string().url().default('postgres://postgres:postgres@localhost:5432/voicebrief'),
   OPENAI_API_KEY: z.string().optional(),
   GROQ_API_KEY: z.string().optional(),
   GEMINI_API_KEY: z.string().optional(),

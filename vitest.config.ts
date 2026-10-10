@@ -7,7 +7,7 @@ export default defineConfig({
     testTimeout: 30_000,
     // Tests always use the offline providers and their own database.
     env: {
-      DATABASE_URL: process.env.TEST_DATABASE_URL || 'postgres://postgres@localhost:5432/voicebrief_test',
+      DATABASE_URL: process.env.TEST_DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/voicebrief_test',
       OPENAI_API_KEY: '',
       GROQ_API_KEY: '',
       GEMINI_API_KEY: '',
