@@ -16,7 +16,7 @@ interface Vendor {
 
 export const VENDORS: Record<Exclude<ProviderName, 'fake'>, Vendor> = {
   openai: { keyVar: 'OPENAI_API_KEY', transcribe: 'whisper-1', chat: 'gpt-4.1-mini', embed: 'text-embedding-3-small' },
-  groq: { baseURL: 'https://api.groq.com/openai/v1', keyVar: 'GROQ_API_KEY', transcribe: 'whisper-large-v3-turbo', chat: 'llama-3.3-70b-versatile' },
+  groq: { baseURL: 'https://api.groq.com/openai/v1', keyVar: 'GROQ_API_KEY', transcribe: 'whisper-large-v3-turbo', chat: 'openai/gpt-oss-120b' },
   gemini: { baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/', keyVar: 'GEMINI_API_KEY', chat: 'gemini-2.5-flash', embed: 'gemini-embedding-001' },
 };
 

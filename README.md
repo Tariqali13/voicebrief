@@ -130,7 +130,7 @@ npm test                           # unit + pipeline tests against Postgres/pgve
 | | |
 | --- | --- |
 | App | Next.js 16 (App Router, route handlers, streaming), React 19, TypeScript (strict) |
-| AI | Whisper (Groq/OpenAI), Llama 3.3 70B on Groq / GPT-4.1 mini / Gemini 2.5 Flash, Gemini or OpenAI embeddings |
+| AI | Whisper (Groq/OpenAI), gpt-oss-120b on Groq / GPT-4.1 mini / Gemini 2.5 Flash, Gemini or OpenAI embeddings |
 | Data | PostgreSQL with pgvector (HNSW) and full-text search |
 | Browser | MediaRecorder, Web Audio waveform, IndexedDB for local recordings |
 | Quality | Vitest against real Postgres + pgvector, evaluation harness, GitHub Actions |

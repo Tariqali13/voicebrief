@@ -6,7 +6,7 @@ Everything here is free and needs no credit card.
 | --- | --- |
 | App (pages + API) | [Vercel](https://vercel.com) Hobby |
 | Postgres + pgvector | [Neon](https://neon.tech) |
-| Speech-to-text and notes | [Groq](https://console.groq.com) (Whisper large v3 turbo, Llama 3.3 70B) |
+| Speech-to-text and notes | [Groq](https://console.groq.com) (Whisper large v3 turbo, gpt-oss-120b) |
 | Embeddings | [Google AI Studio](https://aistudio.google.com/apikey) (Gemini embeddings) |
 
 ## 1. Database
@@ -32,7 +32,9 @@ function duration.
 ## Optional
 
 - `OPENAI_API_KEY` alone switches everything to OpenAI.
-- `LLM_MODEL` picks a different chat model, for example `openai/gpt-oss-120b` on Groq.
+- `LLM_MODEL` picks a different chat model. Groq retires models regularly (see
+  [its deprecations page](https://console.groq.com/docs/deprecations)); if notes start
+  failing with `model_not_found`, set this to a current model and redeploy.
 - Lower `MEETINGS_PER_DAY` / `QUESTIONS_PER_HOUR` if the shared free quota runs low.
 
 After deploying with keys, run the evaluation against the same configuration and commit the
