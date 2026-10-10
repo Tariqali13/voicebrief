@@ -141,3 +141,22 @@ describe('provider selection', () => {
     expect(() => env({ EMBED_PROVIDER: 'groq' } as unknown as NodeJS.ProcessEnv)).toThrow(/no embeddings/);
   });
 });
+
+describe('plainAnswer', () => {
+  it('turns Markdown a model may still emit into readable plain text', async () => {
+    const { plainAnswer } = await import('@/lib/answerText');
+    const md = [
+      '**Cause of the outage**',
+      'The rebuild ran at peak *traffic* [S1].',
+      '',
+      '| Action | Who | Source |',
+      '|--------|-----|--------|',
+      '| Add dashboard | Lina | [S2] |',
+      '## Next',
+    ].join('\n');
+    expect(plainAnswer(md)).toBe(
+      ['Cause of the outage', 'The rebuild ran at peak traffic [S1].', '', '- Action — Who — Source', '- Add dashboard — Lina — [S2]', 'Next'].join('\n'),
+    );
+    expect(plainAnswer('Plain answer with 2 * 3 = 6 [S1].')).toBe('Plain answer with 2 * 3 = 6 [S1].');
+  });
+});
