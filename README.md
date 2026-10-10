@@ -101,8 +101,9 @@ add a result file for your configuration. CI runs the harness on every push to k
 
 ## Try it
 
-**Live demo:** _link added after deployment_ (see [DEPLOY.md](DEPLOY.md): Vercel + Neon +
-free Groq and Gemini keys).
+**Live demo: [voicebrief.onrender.com](https://voicebrief.onrender.com)** (free tier: the
+first visit after a quiet spell takes ~30 s to wake the server). Deployment notes are in
+[DEPLOY.md](DEPLOY.md).
 
 Click **Add three sample meetings** to get a library without recording anything, then try
 **Ask** with "Who is fixing the double charges?".
