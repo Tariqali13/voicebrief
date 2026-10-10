@@ -1,0 +1,6 @@
+Okay, quick sync on the mobile app release. Maria, where are we with the login bug?
+I fixed the login crash yesterday. It only happened on older Android phones. I will ship the fix to the beta group by Thursday.
+Great. We decided to delay the dark mode feature to next sprint, because design is not ready.
+One open question: who owns the push notification setup? Nobody has picked it up yet.
+I can take push notifications, but I need the server keys from Ahmed first.
+Okay, Ahmed will send the keys today. Let's meet again on Friday.
